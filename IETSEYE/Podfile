@@ -1,0 +1,5 @@
+platform :ios, '7.0'
+pod 'AFNetworking', '~> 2.0'
+pod 'SBJson', '~> 3.0'
+pod 'CocoaLumberjack', '~> 1.6'
+pod 'MBProgressHUD', '~> 0.7'
