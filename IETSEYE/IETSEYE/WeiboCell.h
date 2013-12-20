@@ -12,5 +12,6 @@
 
 @property(nonatomic, retain) UILabel *nameLabel;
 @property(nonatomic, retain) UILabel *contentLabel;
+@property(nonatomic, retain) UILabel *timeLabel;
 @property(nonatomic , retain) Weibo *weiboObj;
 @end

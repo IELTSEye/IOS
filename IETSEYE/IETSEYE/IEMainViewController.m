@@ -14,7 +14,8 @@
 #import "Weibo.h"
 #import "MBProgressHUD.h"
 #import "SVPullToRefresh.h"
-
+//google admob
+#define MY_BANNER_UNIT_ID @"a151ea648108251"
 
 // Log levels: off, error, warn, info, verbose
 #if DEBUG
@@ -32,6 +33,8 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
 @synthesize tableData;
 @synthesize pageNumber;
 @synthesize keyword;
+@synthesize tweetsSearchBar;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -56,32 +59,59 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
     [self.tableView.tableHeaderView setHidden:NO];
     
     //searchBar && tableheader
-    UISearchBar *theSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 44)];
-    [theSearchBar setPlaceholder:@"Search"];
-    [theSearchBar setShowsCancelButton:YES animated:YES];
-    [theSearchBar setKeyboardType:UIKeyboardTypeWebSearch];
-    theSearchBar.delegate = self;
-    self.tableView.tableHeaderView = theSearchBar;
+    
+    tweetsSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 44)];
+    [tweetsSearchBar setPlaceholder:@"Search"];
+    [tweetsSearchBar setShowsCancelButton:YES animated:YES];
+    [tweetsSearchBar setKeyboardType:UIKeyboardTypeWebSearch];
+    tweetsSearchBar.delegate = self;
+    
     
     //table footer
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 50, self.tableView.frame.size.width, 44)];
-    UILabel *footerLabel =[[UILabel alloc] initWithFrame:CGRectMake(0, 50, self.tableView.frame.size.width, 44)];
-    footerLabel.text = @"上拉显示更多，Copyright © 2013-2020 by IELTSEYE. All Rights Reserved.";
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 104)];
+    UILabel *footerSummary =[[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 44)];
+    footerSummary.text = @"Drag to load more...";
+    footerSummary.textColor = [UIColor grayColor];
+    footerSummary.font = [UIFont fontWithName:@"Chalkduster" size:15];
+    footerSummary.textAlignment = NSTextAlignmentCenter;
+    
+    UILabel *footerLabel =[[UILabel alloc] initWithFrame:CGRectMake(0, 50, self.tableView.frame.size.width, 60)];
+    footerLabel.text = @"Copyright © 2013-2020 by IELTSEYE. All Rights Reserved.";
+    footerLabel.textColor = [UIColor grayColor];
+    footerLabel.font = [UIFont fontWithName:@"Chalkduster" size:10];
     footerLabel.lineBreakMode = NSLineBreakByWordWrapping;
     footerLabel.numberOfLines = 0;
+    footerLabel.textAlignment = NSTextAlignmentCenter;
+
+    [footerView addSubview:footerSummary];
     [footerView addSubview:footerLabel];
+
     self.tableView.tableFooterView = footerView;
     
     //get data
     [self getNewest];
     
-    //pull-to-refesh
-    __weak IEMainViewController *weakSelf = self;
     
-    // setup pull-to-refresh
-    [self.tableView addPullToRefreshWithActionHandler:^{
-        [weakSelf insertRowAtTop];
-    }];
+    
+    
+    
+//    google admob
+    
+    adMobBanner_ = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];
+    adMobBanner_.adUnitID           = MY_BANNER_UNIT_ID;
+    adMobBanner_.rootViewController = self;
+    [adMobBanner_ loadRequest:[GADRequest request]];
+    
+    
+    
+    
+    //pull-to-refesh
+//    __weak IEMainViewController *weakSelf = self;
+//    
+//    // setup pull-to-refresh
+//    [self.tableView addPullToRefreshWithActionHandler:^{
+//        [weakSelf insertRowAtTop];
+//    }];
     
 }
 
@@ -155,12 +185,11 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
 - (void)getData:(NSInteger )page{
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    NSString *api = [NSString stringWithFormat:@"http://www.ieltseye.com/ieltsApi/index?page=%d&keyword=%@", page, self.keyword];
-    NSLog(@"%@", api);
-    NSURL *URL = [NSURL URLWithString:api];
-    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc]
-                                         initWithRequest:request];
+    NSString *api = @"http://www.ieltseye.com/ieltsApi/tweets";
+    NSDictionary *parameters = @{@"page": [NSString stringWithFormat:@"%d", page], @"keyword":self.keyword};
+    
+    NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod: @"POST" URLString:api parameters:parameters];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     operation.responseSerializer = [AFJSONResponseSerializer serializer];
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         
@@ -170,6 +199,7 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
     [hud hide:YES];
     self.tableData  = [[operation responseObject] objectForKey:@"datas"];
     [self.tableView reloadData];
+    [self scrollToTop];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -182,11 +212,11 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
     self.pageNumber = 1;
     __weak IEMainViewController *weakSelf = self;
     
-    NSString *api = [NSString stringWithFormat:@"http://www.ieltseye.com/ieltsApi/index?page=%d", self.pageNumber];
-    NSURL *URL = [NSURL URLWithString:api];
-    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc]
-                                         initWithRequest:request];
+    NSString *api = @"http://www.ieltseye.com/ieltsApi/tweets";
+    NSDictionary *parameters = @{@"page": [NSString stringWithFormat:@"%d", self.pageNumber], @"keyword":self.keyword};
+    
+    NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod: @"POST" URLString:api parameters:parameters];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     operation.responseSerializer = [AFJSONResponseSerializer serializer];
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         
@@ -204,14 +234,16 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
     NSInteger currentOffset = scrollView.contentOffset.y;
     NSInteger maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height;
     
-    if (maximumOffset - currentOffset <= -40) {
+    if (maximumOffset - currentOffset <= -20) {
         self.pageNumber += 1;
         NSLog(@"%d", self.pageNumber);
         [self getData:self.pageNumber];
     }
 }
 
-
+-(void) scrollToTop{
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+}
 
 -(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 //    UITableViewCell *cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
@@ -219,6 +251,23 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
     return 200;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 50;
+}
+
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    return tweetsSearchBar;
+//    self.tableView.tableHeaderView = theSearchBar;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    return 50;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
+    return adMobBanner_;
+}
 
 
 

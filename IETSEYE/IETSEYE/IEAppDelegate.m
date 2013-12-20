@@ -9,6 +9,7 @@
 #import "IEAppDelegate.h"
 #import "IEMainViewController.h"
 #import "DDLog.h"
+#import "MobClick.h"
 // Log levels: off, error, warn, info, verbose
 #if DEBUG
 static const int ddLogLevel = LOG_LEVEL_VERBOSE;
@@ -33,6 +34,11 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
     [self.window setRootViewController:navController1];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+    
+    
+    //analysis
+//    [MobClick setLogEnabled:YES];
+    [MobClick startWithAppkey:@"51eb1c2256240bc7fa05b7a2"];
     return YES;
 }
 
@@ -62,5 +68,6 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
 
 @end

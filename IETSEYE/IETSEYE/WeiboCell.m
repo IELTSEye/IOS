@@ -14,6 +14,7 @@
 
 @synthesize nameLabel;
 @synthesize contentLabel;
+@synthesize timeLabel;
 
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -27,10 +28,11 @@
 
 
         contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 30.0f, self.frame.size.width, 100.0f)];
-
+        timeLabel = [[UILabel alloc] init];
         
         [self.contentView addSubview:nameLabel];
         [self.contentView addSubview:contentLabel];
+        [self.contentView addSubview:timeLabel];
         self.contentView.layer.cornerRadius = 5;
     }
     return self;
@@ -62,6 +64,11 @@
     contentLabel.lineBreakMode = NSLineBreakByWordWrapping;
     contentLabel.numberOfLines = 0;
     [contentLabel sizeToFit];
+    [timeLabel setFrame:CGRectMake(0, contentLabel.frame.size.height+30, self.frame.size.width, 20.0f)];
+    timeLabel.text = weiboItem.created_at;
+    timeLabel.textColor = [UIColor grayColor];
+    timeLabel.font = [UIFont fontWithName:@"American Typewriter" size:10];
+    
     [self setNeedsDisplay];
 }
 - (void) openUserWeibo{

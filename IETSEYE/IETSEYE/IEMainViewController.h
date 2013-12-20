@@ -7,10 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface IEMainViewController : UITableViewController <UITableViewDataSource, UISearchBarDelegate>
+#import "GADBannerView.h"
+@interface IEMainViewController : UITableViewController <UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate>{
+    GADBannerView *adMobBanner_;
+}
 
 @property(strong, nonatomic)NSMutableArray *tableData;
+@property(strong, nonatomic)UISearchBar *tweetsSearchBar;
 @property  NSInteger pageNumber;
 @property NSString *keyword;
 @end
