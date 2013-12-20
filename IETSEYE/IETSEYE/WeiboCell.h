@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "Weibo.h"
 @interface WeiboCell : UITableViewCell
-@property(nonatomic , retain) Weibo *Weibo;
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier weibo:(Weibo *) Weibo;
+
+@property(nonatomic, retain) UILabel *nameLabel;
+@property(nonatomic, retain) UILabel *contentLabel;
+@property(nonatomic , retain) Weibo *weiboObj;
 @end

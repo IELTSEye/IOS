@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface IEMainViewController : UITableViewController <UITableViewDataSource>
+@interface IEMainViewController : UITableViewController <UITableViewDataSource, UISearchBarDelegate>
 
-@property(strong, nonatomic)NSArray *tableData;
-
+@property(strong, nonatomic)NSMutableArray *tableData;
+@property  NSInteger pageNumber;
+@property NSString *keyword;
 @end
 

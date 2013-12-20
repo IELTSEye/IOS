@@ -25,17 +25,20 @@ PODS:
     - CocoaLumberjack/Core
   - MBProgressHUD (0.8)
   - SBJson (3.2)
+  - SVPullToRefresh (0.4.1)
 
 DEPENDENCIES:
   - AFNetworking (~> 2.0)
   - CocoaLumberjack (~> 1.6)
-  - MBProgressHUD (~> 0.7)
+  - MBProgressHUD (~> 0.8)
   - SBJson (~> 3.0)
+  - SVPullToRefresh (~> 0.4)
 
 SPEC CHECKSUMS:
   AFNetworking: e499052cbf3d743e9bb727bb37adb9dc2547ba15
   CocoaLumberjack: 17803afbade3126a377d32b8d23367264b44ced6
   MBProgressHUD: 2bbc6f470111daf7f3eaa4eb12b8cbf01c4c0622
   SBJson: abc2bf2baef456d5dae213f9826fe2b6fdf19861
+  SVPullToRefresh: 61a0e4bd12bd6f8e3465909810b0fbeb1a28d5f2
 
 COCOAPODS: 0.28.0

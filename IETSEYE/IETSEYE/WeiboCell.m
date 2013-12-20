@@ -10,31 +10,28 @@
 #import "Weibo.h"
 @implementation WeiboCell
 
-@synthesize Weibo;
+@synthesize weiboObj;
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier weibo:(Weibo *) Weibo
+@synthesize nameLabel;
+@synthesize contentLabel;
+
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.Weibo = Weibo;
+        
         [self.contentView setBackgroundColor:[UIColor clearColor]];
-        UILabel *nameLabel = [[UILabel alloc] init];
+        nameLabel = [[UILabel alloc] init];
         nameLabel.frame = CGRectMake(0, 0, self.frame.size.width, 20.0f);
-        [nameLabel setTextColor:[UIColor blackColor]];
-        [nameLabel setText:Weibo.username];
+
+
+        contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 30.0f, self.frame.size.width, 100.0f)];
+
+        
         [self.contentView addSubview:nameLabel];
-        
-        
-        UILabel *contentLabel = [[UILabel alloc] init];
-        //    CGSize labelSize = [Weibo.content sizeWithFont:[UIFont boldSystemFontOfSize:17.0f]
-        //                       constrainedToSize:CGSizeMake(self.frame.size.width, 100)
-        //                           lineBreakMode:NSLineBreakByWordWrapping];
-        contentLabel.frame = CGRectMake(0, 30.0f, self.frame.size.width, 100.0f);
-        contentLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        contentLabel.numberOfLines = 0;
-        contentLabel.text = Weibo.content;
-        [contentLabel sizeToFit];
         [self.contentView addSubview:contentLabel];
+        self.contentView.layer.cornerRadius = 5;
     }
     return self;
 }
@@ -46,5 +43,30 @@
     // Configure the view for the selected state
 }
 
+- (void) setWeiboObj:(Weibo *)weiboItem{
+    weiboObj = weiboItem;
+    nameLabel.text = weiboItem.username;
+    nameLabel.textColor = [[UIColor alloc] initWithRed:0 green:0.33f blue:0.6f alpha:1];
+    nameLabel.backgroundColor = [[UIColor alloc] initWithRed:0.9 green:0.9 blue:0.9 alpha:1];
+    nameLabel.layer.borderColor = [[UIColor alloc] initWithRed:0.86f green:0.86f blue:0.86f alpha:1].CGColor;
+    nameLabel.layer.borderWidth = 0.9;
+    nameLabel.layer.cornerRadius = 5;
+    
+    nameLabel.userInteractionEnabled = YES;
+    UITapGestureRecognizer *tapGesture =
+    [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openUserWeibo)];
+    [nameLabel addGestureRecognizer:tapGesture];
+    
+    
+    contentLabel.text = weiboItem.content;
+    contentLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    contentLabel.numberOfLines = 0;
+    [contentLabel sizeToFit];
+    [self setNeedsDisplay];
+}
+- (void) openUserWeibo{
+    NSString *userPage = [NSString stringWithFormat:@"http://www.weibo.cn/%@", self.weiboObj.uid];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:userPage]];
+}
 
 @end
