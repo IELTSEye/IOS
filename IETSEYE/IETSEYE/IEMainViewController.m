@@ -57,6 +57,7 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
     self.tableView.delegate = self;
     self.keyword = @"";
     [self.tableView.tableHeaderView setHidden:NO];
+    [self.tableView setAlwaysBounceVertical:YES];
     
     //searchBar && tableheader
     
@@ -107,8 +108,8 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
     
     //pull-to-refesh
 //    __weak IEMainViewController *weakSelf = self;
-//    
-//    // setup pull-to-refresh
+    
+    // setup pull-to-refresh
 //    [self.tableView addPullToRefreshWithActionHandler:^{
 //        [weakSelf insertRowAtTop];
 //    }];
@@ -192,17 +193,18 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     operation.responseSerializer = [AFJSONResponseSerializer serializer];
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        
+        [self scrollToTop];
     } failure:nil];
     [operation start];
     [operation waitUntilFinished];
+//    scroll before reload
     [hud hide:YES];
     self.tableData  = [[operation responseObject] objectForKey:@"datas"];
     [self.tableView reloadData];
-    [self scrollToTop];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
 //    [self.tableView triggerPullToRefresh];
 }
 
@@ -242,7 +244,7 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
 }
 
 -(void) scrollToTop{
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    [self.tableView setContentOffset:CGPointMake(0, -70) animated:YES];
 }
 
 -(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
