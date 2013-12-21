@@ -29,7 +29,6 @@
 
         contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 30.0f, self.frame.size.width, 100.0f)];
         timeLabel = [[UILabel alloc] init];
-        
         [self.contentView addSubview:nameLabel];
         [self.contentView addSubview:contentLabel];
         [self.contentView addSubview:timeLabel];

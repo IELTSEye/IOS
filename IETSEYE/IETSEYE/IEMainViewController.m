@@ -248,8 +248,16 @@ static const int ddLogLevel = LOG_LEVEL_OFF;
 }
 
 -(CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-//    UITableViewCell *cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
-//    return cell.frame.size.height;
+    
+    WeiboCell *cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
+    
+    CGSize constraint = CGSizeMake(self.tableView.frame.size.width, 300.0f);
+    CGSize size = [cell.contentLabel.text boundingRectWithSize: constraint options: NSStringDrawingUsesLineFragmentOrigin
+                                 attributes: @{ NSFontAttributeName: cell.contentLabel.font } context: nil].size;
+    return size.height+50.0f;
+}
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     return 200;
 }
 
